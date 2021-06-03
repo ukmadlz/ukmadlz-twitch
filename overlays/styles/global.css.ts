@@ -10,8 +10,8 @@ globalStyle('body', {
   "width": "1920px",
 })
 globalStyle('main', {
-  "minHeight": "900px",
+  "minHeight": "940px",
 });
 globalStyle('footer', {
-  "minHeight": "180px"
+  "minHeight": "140px"
 });

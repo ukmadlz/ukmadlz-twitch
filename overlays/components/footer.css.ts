@@ -7,10 +7,13 @@ export const footer = style({
 export const colourBar = style({
     "height": "1em",
     "width": "100%",
-    "backgroundColor": vars.color.yellow
+    "backgroundColor": vars.color.teal
 })
 export const footerContainer = style({
     "padding": "1em",
 })
 export const logoContainer = style({
+})
+export const logo = style({
+    "height": "6em",
 })
