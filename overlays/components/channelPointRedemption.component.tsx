@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from 'react';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import OctopusSubComponent from "./sub-components/octopus.component"
 
-const client = new W3CWebSocket('ws://localhost:8000/ws/twitch-events/');
+const client = new W3CWebSocket(process.env.TAU_WS_URL || 'ws://localhost:8000/ws/twitch-events/');
 
 interface Reward {
   id: string
@@ -27,7 +27,7 @@ export default function ChannelPointRedemptions(): JSX.Element {
     client.onopen = () => {
         console.log('WebSocket Client Connected');
         client.send(JSON.stringify({
-            token: "6df79ca03d2f3aa31f66984fa6fd158369a7a337"
+            token: process.env.TAU_WS_TOKEN
         }))
     };
 
