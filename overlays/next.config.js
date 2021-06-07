@@ -1,4 +1,6 @@
 const { VanillaExtractPlugin } = require('@vanilla-extract/webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const {
   getGlobalCssLoader,
 } = require('next/dist/build/webpack/config/blocks/css/loaders');
@@ -38,7 +40,7 @@ function withVanillaExtract(pluginOptions = {}) {
             : [MiniCssExtractPlugin.loader, 'css-loader'],
         });
 
-        const plugins = [];
+        const plugins = [new MiniCssExtractPlugin()];
 
         plugins.push(new VanillaExtractPlugin(pluginOptions));
 
