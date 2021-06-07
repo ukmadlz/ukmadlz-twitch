@@ -32,9 +32,8 @@ export default function ChannelPointRedemptions(): JSX.Element {
     };
 
     client.onmessage = (message) => {
-      console.log(message);
         if (message.data) {
-          const eventObject = JSON.parse(message.data);
+          const eventObject = JSON.parse(message.data.toString());
           if (eventObject.event_type === "point-redemption") {
               const { reward } = eventObject.event_data;
               setReward(reward)
