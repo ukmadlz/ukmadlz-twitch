@@ -35,7 +35,7 @@ function withVanillaExtract(pluginOptions = {}) {
                 [],
                 []
               )
-            : ['css-loader'],
+            : [MiniCssExtractPlugin.loader, 'css-loader'],
         });
 
         const plugins = [];
