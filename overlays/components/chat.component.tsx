@@ -7,16 +7,17 @@ interface IChatMessage {
     user: string
     message: string
     profileImage?: string
+    messageId: string
 }
 
 interface IChatMessages extends Array<IChatMessage>{}
 
 export default function Chat(): JSX.Element {
-  const [chat, setChat] = useState<IChatMessages | Array>([]);
+  const [chat, setChat] = useState<IChatMessages>([]);
   
   useEffect(() => {
     const effectChat = [];
-    ComfyJS.Init(process.env.NEXT_PUBLIC_TWITCH_CHANNEL);
+    ComfyJS.Init(process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '');
     ComfyJS.onChat = ( user, message, flags, self, extra ) => {
         const { id, userId } = extra;
         // console.log({ user, message, flags, self, extra });
