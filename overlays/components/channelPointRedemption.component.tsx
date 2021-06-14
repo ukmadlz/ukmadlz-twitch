@@ -1,9 +1,6 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import OctopusSubComponent from "./sub-components/octopus.component"
-
-const TAU_WS = process.env.NEXT_PUBLIC_TAU_WS_URL || process.env.TAU_WS_URL || 'ws://localhost:8000/ws/twitch-events/';
-const client = new W3CWebSocket(TAU_WS);
 
 interface Reward {
   id: string
@@ -23,6 +20,9 @@ function getReturnComponent(rewardId: string): JSX.Element | null {
 
 export default function ChannelPointRedemptions(): JSX.Element {
   const [reward, setReward] = useState<Reward | null>(null);
+  
+  const TAU_WS = process.env.NEXT_PUBLIC_TAU_WS_URL || process.env.TAU_WS_URL || 'ws://localhost:8000/ws/twitch-events/';
+  const client = new W3CWebSocket(TAU_WS);
   
   useEffect(() => {
     client.onopen = () => {
