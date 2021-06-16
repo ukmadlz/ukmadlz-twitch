@@ -5,7 +5,7 @@ export const chatList = style({
     maxHeight: "640px",
     width: "350px",
     display: "flex",
-    flexDirection: "column-reverse",
+    flexDirection: "column",
     overflow: "hidden",
     background: "gray",
 })
