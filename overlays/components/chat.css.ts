@@ -2,11 +2,12 @@ import { style } from '@vanilla-extract/css'
 import { vars } from '../styles/var.css'
 
 export const chatList = style({
-    maxHeight: "940px",
-    width: "500px",
+    maxHeight: "640px",
+    width: "350px",
     display: "flex",
     flexDirection: "column-reverse",
-    overflow: "auto",
+    overflow: "hidden",
+    background: "gray",
 })
 export const chatMessage = style({
     background: vars.color.black,
