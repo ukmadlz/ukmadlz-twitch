@@ -1,0 +1,24 @@
+{
+  "name": "bot",
+  "version": "0.0.1",
+  "description": "This is my generic chat bot",
+  "main": "dist/index.js",
+  "author": "Mike Elsmore",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon dist",
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "start": "node dist"
+  },
+  "dependencies": {
+    "comfy.js": "^1.1.12",
+    "dotenv": "^10.0.0",
+    "node-fetch": "^2.6.1",
+    "typescript": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^15.12.4",
+    "@types/node-fetch": "^2.5.10"
+  }
+}
