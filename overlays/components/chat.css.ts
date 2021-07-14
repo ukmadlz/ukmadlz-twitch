@@ -1,12 +1,14 @@
 import { style } from '@vanilla-extract/css'
 import { vars } from '../styles/var.css'
 
+export const chatContainer = style({
+    overflow: "hidden",
+})
 export const chatList = style({
-    maxHeight: "640px",
+    maxHeight: "650px",
     width: "350px",
     display: "flex",
     flexDirection: "column",
-    overflow: "hidden",
     background: "gray",
 })
 export const chatMessage = style({

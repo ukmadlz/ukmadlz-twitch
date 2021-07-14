@@ -52,16 +52,18 @@ export default function Chat(): JSX.Element {
   }, [])
 
   return (
-    <div className={styles.chatList}>
-      {chat?.slice(-8).map(chatMessage => {
-        return (<div className={`${styles.chatMessage} message-${chatMessage.messageId}`} key={chatMessage.messageId}>
-          <img className={styles.profileImage} src={chatMessage?.profileImage} alt={chatMessage?.user} />
-          <div className={styles.textContainer}>
-            <span className={styles.userName}>{chatMessage?.user}</span>
-            <span className={styles.message}>{chatMessage?.message}</span>
-          </div>
-        </div>)
-      })}
+    <div className={styles.chatContainer} >
+      <div className={styles.chatList}>
+        {chat?.slice(-8).map(chatMessage => {
+          return (<div className={`${styles.chatMessage} message-${chatMessage.messageId}`} key={chatMessage.messageId}>
+            <img className={styles.profileImage} src={chatMessage?.profileImage} alt={chatMessage?.user} />
+            <div className={styles.textContainer}>
+              <span className={styles.userName}>{chatMessage?.user}</span>
+              <span className={styles.message}>{chatMessage?.message}</span>
+            </div>
+          </div>)
+        })}
+      </div>
     </div>
   )
 }
