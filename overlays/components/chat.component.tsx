@@ -18,6 +18,11 @@ const DND = [
   "19264788", // NightBot
 ]
 
+const kindaBigDeal = [
+  "536397236", // FiniteSingularity
+  "469006291", // Whitep4nth3r
+];
+
 export default function Chat(): JSX.Element {
   const [chat, setChat] = useState<IChatMessages>([]);
   
@@ -41,6 +46,7 @@ export default function Chat(): JSX.Element {
             const { profile_image_url } = userData.data[0];
             const chatObject = {
               user,
+              userId,
               message,
               profileImage: profile_image_url,
               messageId: id,
@@ -64,8 +70,11 @@ export default function Chat(): JSX.Element {
     <div className={styles.chatContainer} >
       <div className={styles.chatList}>
         {chat?.slice(-8).map(chatMessage => {
+          const profileImage = (kindaBigDeal.includes(chatMessage.userId)) ? 
+          `https://res.cloudinary.com/elsmore-me/image/upload/b_rgb:000000,bo_0px_solid_rgb:000,c_scale,g_center,l_twitch-overlay:users-${chatMessage.userId},w_97,x_60,y_60/v1628698037/twitch-overlay/verified.png` :
+          chatMessage.profileImage;
           return (<div className={`${styles.chatMessage} message-${chatMessage.messageId}`} key={chatMessage.messageId}>
-            <img className={styles.profileImage} src={chatMessage?.profileImage} alt={chatMessage?.user} />
+            <img className={styles.profileImage} src={profileImage} alt={chatMessage?.user} />
             <div className={styles.textContainer}>
               <span className={styles.userName}>{chatMessage?.user}</span>
               <span className={styles.message}>{chatMessage?.message}</span>
