@@ -22,6 +22,7 @@ export const profileImage = style({
 export const textContainer = style({
     display: "inline",
     float: "left",
+    fontFamily: "Arial",
 })
 export const userName = style({
     display: "block",
