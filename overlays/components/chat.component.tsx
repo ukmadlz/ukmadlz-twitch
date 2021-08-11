@@ -13,6 +13,11 @@ interface IChatMessage {
 
 interface IChatMessages extends Array<IChatMessage>{}
 
+const DND = [
+  "135204446", // PretzelRocks
+  "19264788", // NightBot
+]
+
 export default function Chat(): JSX.Element {
   const [chat, setChat] = useState<IChatMessages>([]);
   
@@ -22,30 +27,34 @@ export default function Chat(): JSX.Element {
     ComfyJS.onChat = ( user, message, flags, self, extra ) => {
         const { id, userId, timestamp } = extra;
         console.log(extra);
-        (async () => {
-          const response = await Fetch(`https://ukmadlz-tau.onrender.com/api/twitch/helix/users?format=json&id=${userId}`,
-            {
-              method: 'get',
-              headers: {
-                'Authorization': `Token ${process.env.NEXT_PUBLIC_TAU_WS_TOKEN}`
-              },
-            });
-          const userData = await response.json();
-          const { profile_image_url } = userData.data[0];
-          const chatObject = {
-            user,
-            message,
-            profileImage: profile_image_url,
-            messageId: id,
-            timestamp,
-          };
-          setChat(previousChat => {
-            return [
-              ...previousChat,
-              chatObject
-            ]
-          })
-        })()
+
+        if(!DND.includes(userId)) {
+          (async () => {
+            const response = await Fetch(`https://ukmadlz-tau.onrender.com/api/twitch/helix/users?format=json&id=${userId}`,
+              {
+                method: 'get',
+                headers: {
+                  'Authorization': `Token ${process.env.NEXT_PUBLIC_TAU_WS_TOKEN}`
+                },
+              });
+            const userData = await response.json();
+            const { profile_image_url } = userData.data[0];
+            const chatObject = {
+              user,
+              message,
+              profileImage: profile_image_url,
+              messageId: id,
+              timestamp,
+            };
+            setChat(previousChat => {
+              return [
+                ...previousChat,
+                chatObject
+              ]
+            })
+          })()
+        }
+
     }
     return () => {
     }
