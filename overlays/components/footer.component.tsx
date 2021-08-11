@@ -2,6 +2,8 @@ import React from 'react'
 import * as styles from './footer.css'
 import { vars } from '../styles/var.css'
 
+import SocialFooterComponent from './sub-components/social-footer.compontent';
+
 export default function FooterComponent () {
     return (
         <footer className={styles.footer} >
@@ -14,6 +16,7 @@ export default function FooterComponent () {
                 alt="Mike Elsmore"
               />
             </div>
+            <SocialFooterComponent />
           </div>
         </footer>
         )
