@@ -5,7 +5,7 @@ export const socialContainer = style({
     "fontSize": "3.5rem",
     "position": "absolute",
     "right": "1rem",
-    "bottom": "-3.5rem",
+    "bottom": "1.5rem",
     "color": "white"
 })
 export const socialIcon = style({
