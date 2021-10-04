@@ -30,6 +30,12 @@ export default function SocialFooterComponent () {
                 <div>
                     <FontAwesomeIcon className={styles.socialIcon} icon={['fab', 'twitch']} />/ukmadlz
                 </div>
+                <div>
+                    <img
+                        src="/assets/CloudQuerySmol.png"
+                        alt="CloudQuery"
+                    />
+                </div>
             </Carousel>
         </div>
     );
