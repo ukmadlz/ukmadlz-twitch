@@ -3,7 +3,7 @@ import * as styles from './embarrass.css'
 
 export default function EmbarrassComponent({ rewardId, prompt }: any): JSX.Element {
     const clipID = prompt.split(' by ')[0];
-    const parent = process.env.NEXT_PUBLIC_VERCEL_URL || process.env.NEXT_SITE_DOMAIN || 'localhost';
+    const parent = process.env.NEXT_PUBLIC_SITE_DOMAIN || process.env.NEXT_PUBLIC_VERCEL_URL || 'localhost';
     return ( 
         <div className={styles.embarrassedContainer}>
             <iframe
