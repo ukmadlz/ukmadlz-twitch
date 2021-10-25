@@ -12,7 +12,6 @@ export default function EmbarrassComponent({ rewardId, prompt }: any): JSX.Eleme
                 scrolling="no"
                 height="378"
                 width="620"
-                autoPlay={true}
             ></iframe>
         </div>
         )

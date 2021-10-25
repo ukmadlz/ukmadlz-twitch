@@ -1,6 +1,7 @@
 import ComfyJS from "comfy.js";
 import Dotenv from "dotenv";
 import Fetch from "node-fetch";
+import Tau from "./tau";
 
 Dotenv.config();
 
@@ -26,24 +27,7 @@ interface IPossibleCommands {
 // Channel Owner Details
 const CHANNEL_OWNER_ID = process.env.CHANNEL_OWNER_ID || "";
 
-/**
- * Checks that the user making the command is a follower
- * @param {string} channelUserId Channel Owners User ID
- * @param {string} commandUserId Command User ID
- * @returns {Promise<boolean>}
- */
-const isFollower = async (channelUserId: string, commandUserId: string): Promise<boolean> => {
-  const followerUrl = `https://ukmadlz-tau.onrender.com/api/twitch/helix/users/follows?format=json&from_id=${channelUserId}&to_id=${commandUserId}`
-  const response = await Fetch(followerUrl,
-  {
-    method: 'get',
-    headers: {
-      'Authorization': `Token ${process.env.TAU_WS_TOKEN}`
-    },
-  });
-  const followerUserData = await response.json();
-  return Boolean(followerUserData.total)
-}
+const tau = new Tau();
 
 /**
  * Checks if the user can run said command
@@ -52,7 +36,7 @@ const isFollower = async (channelUserId: string, commandUserId: string): Promise
  * @param {Function} follower Check if the user is a follower of the channel
  * @returns {boolean}
  */
-const isAllowed = async (permissions: IPermissions, flags: IPermissions, follower: Promise<boolean>) => {
+const isAllowed = async (permissions: IPermissions, flags: IPermissions, follower: boolean) => {
   if (permissions.anyone) {
     return true;
   }
@@ -110,10 +94,28 @@ ComfyJS.onCommand = async (user: any, command: string, message: any, flags: any,
       permissions,
       action  
     } = PossibleCommands[command];
-    if(await isAllowed(permissions, flags, isFollower(CHANNEL_OWNER_ID, userId))) {
+    if(await isAllowed(permissions, flags, tau.isFollower(CHANNEL_OWNER_ID, userId))) {
       action(user, message, flags, extra);
     }
   }
 }
 
 ComfyJS.Init(String(process.env.TWITCH_CHANNEL));
+const main = async () => {
+  const clips = await tau.listClips();
+  const redemptions = await tau.ListChannelPointRedemptions();
+  clips.data.forEach(async (clip) => {
+    const clipId = `${clip.id} by ${clip.creator_name}`;
+    const clipTitle = `${clip.title} by ${clip.creator_name}`;
+    const matchedRedemption = redemptions.data.filter(redemption => {
+      return redemption.prompt === clipId;
+    })
+    if(matchedRedemption.length < 1) {
+      console.log(`${clipTitle} has no redemption`);
+      tau.CreateChannelPointRedemption(clipTitle, clipId, 2000);
+    } else {
+      console.log(`${clipTitle} already exists`);
+    }
+  })
+}
+main();
