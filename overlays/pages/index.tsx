@@ -1,8 +1,7 @@
 import HeadComponent from '../components/head.component'
 import FooterComponent from '../components/footer.component'
-import ChannelPointRedemption from '../components/channelPointRedemption.component'
 import Chat from '../components/chat.component';
-import Alerts from '../components/alerts.component'
+import EventsComponent from '../components/events.component';
 
 export default function Home() {
   return (
@@ -10,7 +9,7 @@ export default function Home() {
       <HeadComponent/>
       <main>
         <Chat />
-        <ChannelPointRedemption />
+        <EventsComponent />
       </main>
       <FooterComponent/>
     </div>
