@@ -2,20 +2,20 @@ import React from 'react';
 import * as styles from './alerts.css'
 
 const allowedEvents = [
-  'follow',
-  'cheer',
-  'subscribe',
+  'channel-follow',
+  'channel-cheer',
+  'channel-subscribe',
   // 'raid'
 ];
 
 function getAlertDetails (tauEvent: any) {
   const { event_data, event_type } = tauEvent.tauEvent;
   switch (event_type) {
-    case 'cheer':
+    case 'channel-cheer':
       return <h1>Thank you {event_data.user_name} for the {event_data.bits} bits</h1>;
-    case 'follow':
+    case 'channel-follow':
       return <h1>Thank you for following the madness {event_data.user_name}</h1>;
-    case 'subscribe':
+    case 'channel-subscribe':
       return <h1>Thank you for subbing {event_data.user_name}</h1>;
   }
 }

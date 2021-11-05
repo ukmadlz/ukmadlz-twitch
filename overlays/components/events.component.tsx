@@ -8,7 +8,7 @@ const tauEvents: any[] = [];
 function getReturnComponent(eventType: string, tauEvent: any): JSX.Element | null {
   console.log(`Event Type: ${eventType}`)
   switch (eventType) {
-    case 'point-redemption':
+    case 'channel-channel_points_custom_reward_redemption-add':
       return <ChannelPointRedemption tauEvent={tauEvent}/>;
     default:
       return <Alerts tauEvent={tauEvent}/>;
@@ -35,21 +35,30 @@ export default function EventsComponent() {
           const eventObject = JSON.parse(message.data.toString());
           console.log(`New event with data: ${eventObject.id}`)
           if (tauEvents.filter(event => event.id === eventObject.id).length < 1) {
+            console.log(`Added ${eventObject.id} to queue`)
             tauEvents.push(eventObject);
           }
         }
       };
+
+      const queueEmptier = () => {
+        console.log(`Checking queue for events ${new Date()}`)
+        setTimeout(async () => {
+          if (tauEvents.length > 0) {
+            console.log('Setting event to state')
+            await setTauEvent(tauEvents.shift());
+          } else {
+            console.log(`Emptying state ${new Date()}`)
+            await setTauEvent(null)
+          }
+          queueEmptier();
+        }, 10000)
+      }
+      queueEmptier();
   
       return () => {
       }
     }, [])
 
-    setTimeout(() => {
-      if (tauEvents.length > 0) {
-        setTauEvent(tauEvents.shift());
-      } else {
-        setTauEvent(null)
-      }
-    }, 10000)
     return (<>{tauEvent && getReturnComponent(tauEvent.event_type, tauEvent)}</>)
 }
