@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ComfyJS from 'comfy.js'
 import Fetch from 'node-fetch'
+import HTMLParse from 'html-react-parser'
 import * as styles from './chat.css'
 
 interface IChatMessage {
@@ -10,6 +11,7 @@ interface IChatMessage {
     profileImage?: string
     messageId: string
     timestamp: string
+    messageEmotes: string[]
 }
 
 interface IChatMessages extends Array<IChatMessage>{}
@@ -24,6 +26,41 @@ const kindaBigDeal = [
   "469006291", // Whitep4nth3r
 ];
 
+function getMessageHTML(message: string, emotes: any) {
+  if (!emotes) return message;
+
+  // store all emote keywords
+  // ! you have to first scan through 
+  // the message string and replace later
+  const stringReplacements: any = [];
+
+  // // iterate of emotes to access ids and positions
+  Object.entries(emotes).forEach(([id, positions]) => {
+    // use only the first position to find out the emote key word
+    const [start, end] = positions[0].split("-");
+    const stringToReplace = message.substring(
+      parseInt(start, 10),
+      parseInt(end, 10) + 1
+    );
+
+    stringReplacements.push({
+      stringToReplace: stringToReplace,
+      replacement: `<img src="https://static-cdn.jtvnw.net/emoticons/v1/${id}/3.0" style="width: 3em">`,
+    });
+  });
+
+  // generate HTML and replace all emote keywords with image elements
+  const messageHTML = stringReplacements.reduce(
+    (acc, { stringToReplace, replacement }) => {
+      // obs browser doesn't seam to know about replaceAll
+      return acc.split(stringToReplace).join(replacement);
+    },
+    message
+  );
+
+  return HTMLParse(messageHTML);
+}
+
 export default function Chat(): JSX.Element {
   const [chat, setChat] = useState<IChatMessages>([]);
   
@@ -31,8 +68,7 @@ export default function Chat(): JSX.Element {
     // Process Chat Messages
     ComfyJS.Init(process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '');
     ComfyJS.onChat = ( user, message, flags, self, extra ) => {
-        const { id, userId, timestamp } = extra;
-        console.log(extra);
+        const { id, userId, timestamp, messageEmotes } = extra;
 
         if(!DND.includes(userId)) {
           (async () => {
@@ -52,6 +88,7 @@ export default function Chat(): JSX.Element {
               profileImage: profile_image_url,
               messageId: id,
               timestamp,
+              messageEmotes,
             };
             setChat(previousChat => {
               return [
@@ -78,7 +115,7 @@ export default function Chat(): JSX.Element {
             <img className={styles.profileImage} src={profileImage} alt={chatMessage?.user} />
             <div className={styles.textContainer}>
               <span className={styles.userName}>{chatMessage?.user}</span>
-              <span className={styles.message}>{chatMessage?.message}</span>
+              <div className={styles.message}>{getMessageHTML(chatMessage?.message, chatMessage?.messageEmotes)}</div>
             </div>
           </div>)
         })}
