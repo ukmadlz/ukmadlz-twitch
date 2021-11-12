@@ -35,7 +35,7 @@ function getMessageHTML(message: string, emotes: any) {
   const stringReplacements: any = [];
 
   // // iterate of emotes to access ids and positions
-  Object.entries(emotes).forEach(([id, positions]) => {
+  Object.entries(emotes).forEach(([id, positions]: any) => {
     // use only the first position to find out the emote key word
     const [start, end] = positions[0].split("-");
     const stringToReplace = message.substring(
@@ -51,7 +51,7 @@ function getMessageHTML(message: string, emotes: any) {
 
   // generate HTML and replace all emote keywords with image elements
   const messageHTML = stringReplacements.reduce(
-    (acc, { stringToReplace, replacement }) => {
+    (acc: any, { stringToReplace, replacement }: any) => {
       // obs browser doesn't seam to know about replaceAll
       return acc.split(stringToReplace).join(replacement);
     },
@@ -90,7 +90,7 @@ export default function Chat(): JSX.Element {
               timestamp,
               messageEmotes,
             };
-            setChat(previousChat => {
+            setChat((previousChat: any) => {
               return [
                 ...previousChat,
                 chatObject
