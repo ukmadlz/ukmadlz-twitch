@@ -1,7 +1,7 @@
 import ComfyJS from "comfy.js";
 import Dotenv from "dotenv";
-import Fetch from "node-fetch";
 import Tau from "./tau";
+import Untappd from "./untappd";
 
 Dotenv.config();
 
@@ -83,7 +83,23 @@ const PossibleCommands: IPossibleCommands = {
     action: (user: any, message: any, flags: any, extra: any) => {
       console.log('Do the thing');
     }
-  } 
+  },
+  beer: {
+    permissions: {
+      broadcaster: true,
+      mod: true,
+      founder: true,
+      subscriber: true,
+      vip: true,
+      highlighted: false,
+      customReward: false,
+      follower: true,
+    },
+    action: async () => {
+      const beerStatement = await new Untappd().beerStatement();
+      ComfyJS.Say(beerStatement);
+    }
+  }
 };
 
 // Receive the command from Twitch and do something
@@ -94,13 +110,13 @@ ComfyJS.onCommand = async (user: any, command: string, message: any, flags: any,
       permissions,
       action  
     } = PossibleCommands[command];
-    if(await isAllowed(permissions, flags, tau.isFollower(CHANNEL_OWNER_ID, userId))) {
+    if(await isAllowed(permissions, flags, await tau.isFollower(CHANNEL_OWNER_ID, userId))) {
       action(user, message, flags, extra);
     }
   }
 }
 
-ComfyJS.Init(String(process.env.TWITCH_CHANNEL));
+ComfyJS.Init(String(process.env.TWITCH_CHANNEL), String(process.env.TWITCH_OAUTH));
 const main = async () => {
   const clips = await tau.listClips();
   const redemptions = await tau.ListChannelPointRedemptions();
@@ -118,4 +134,4 @@ const main = async () => {
     }
   })
 }
-main();
+// main();
