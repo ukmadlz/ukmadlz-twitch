@@ -109,7 +109,7 @@ export default function Chat(): JSX.Element {
       <div className={styles.chatList}>
         {chat?.slice(-8).map(chatMessage => {
           const profileImage = (chatMessage?.userId && kindaBigDeal.includes(chatMessage.userId)) ? 
-          `https://res.cloudinary.com/elsmore-me/image/upload/b_rgb:000000,bo_0px_solid_rgb:000,c_scale,g_center,l_twitch-overlay:users-${chatMessage.userId},w_97,x_60,y_60/v1628698037/twitch-overlay/verified.png` :
+          `https://res.cloudinary.com/elsmore-me/image/upload/b_rgb:000000,bo_0px_solid_rgb:000,c_scale,g_center,l_twitch-overlay:users-${chatMessage.userId},w_98,x_60,y_60/v1628698037/twitch-overlay/verified.png` :
           chatMessage.profileImage;
           return (<div className={`${styles.chatMessage} message-${chatMessage.messageId}`} key={chatMessage.messageId}>
             <img className={styles.profileImage} src={profileImage} alt={chatMessage?.user} />
