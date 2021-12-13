@@ -1,5 +1,6 @@
 import ComfyJS from "comfy.js";
 import Dotenv from "dotenv";
+import { v2 as Cloudinary } from 'cloudinary';
 import Tau from "./tau";
 import Untappd from "./untappd";
 
@@ -118,12 +119,29 @@ ComfyJS.onCommand = async (user: any, command: string, message: any, flags: any,
 }
 
 ComfyJS.Init(String(process.env.TWITCH_CHANNEL), String(process.env.TWITCH_OAUTH));
+Cloudinary.config({
+  cloud_name: String(process.env.CLOUDINARY_CLOUD_NAME), 
+  api_key: String(process.env.CLOUDINARY_API_KEY), 
+  api_secret: String(process.env.CLOUDINARY_API_SECRET), 
+  secure: true
+});
 const main = async () => {
   const clips = await tau.listClips();
   const redemptions = await tau.ListChannelPointRedemptions();
   clips.data.forEach(async (clip: any) => {
     const clipId = `${clip.id} by ${clip.creator_name}`;
     const clipTitle = `${clip.title} by ${clip.creator_name}`;
+    const clipUrl = String(clip.thumbnail_url).split('-preview')[0] + '.mp4'
+    const uploadToCloudinary = await new Promise((resolve, reject) => {
+      Cloudinary.uploader.upload(clipUrl, {
+        public_id: clip.id,
+        folder: 'twitch-overlay/clips',
+        resource_type: 'video',
+      }, (error: any, result: any) => {
+        if(error) reject(error);
+        else resolve(result);
+      })
+    });
     const matchedRedemption = redemptions.data.filter((redemption: any) => {
       return redemption.prompt === clipId;
     })
@@ -135,4 +153,4 @@ const main = async () => {
     }
   })
 }
-// main();
+main();

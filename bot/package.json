@@ -12,6 +12,7 @@
     "start": "node dist"
   },
   "dependencies": {
+    "cloudinary": "^1.27.1",
     "comfy.js": "^1.1.12",
     "dotenv": "^10.0.0",
     "node-fetch": "^2.6.1",
