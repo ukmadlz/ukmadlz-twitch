@@ -94,10 +94,11 @@ const PossibleCommands: IPossibleCommands = {
       highlighted: false,
       customReward: false,
       follower: true,
+      anyone: true,
     },
     action: async () => {
       const beerStatement = await new Untappd().beerStatement();
-      ComfyJS.Say(beerStatement);
+      ComfyJS.Say(beerStatement, String(process.env.TWITCH_CHANNEL));
     }
   }
 };
@@ -111,7 +112,7 @@ ComfyJS.onCommand = async (user: any, command: string, message: any, flags: any,
       action  
     } = PossibleCommands[command];
     if(await isAllowed(permissions, flags, await tau.isFollower(CHANNEL_OWNER_ID, userId))) {
-      action(user, message, flags, extra);
+      await action(user, message, flags, extra);
     }
   }
 }
@@ -120,10 +121,10 @@ ComfyJS.Init(String(process.env.TWITCH_CHANNEL), String(process.env.TWITCH_OAUTH
 const main = async () => {
   const clips = await tau.listClips();
   const redemptions = await tau.ListChannelPointRedemptions();
-  clips.data.forEach(async (clip) => {
+  clips.data.forEach(async (clip: any) => {
     const clipId = `${clip.id} by ${clip.creator_name}`;
     const clipTitle = `${clip.title} by ${clip.creator_name}`;
-    const matchedRedemption = redemptions.data.filter(redemption => {
+    const matchedRedemption = redemptions.data.filter((redemption: any) => {
       return redemption.prompt === clipId;
     })
     if(matchedRedemption.length < 1) {

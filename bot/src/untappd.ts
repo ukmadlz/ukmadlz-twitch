@@ -27,6 +27,7 @@ export default class Untapped {
             });
             return await response.json();
         } catch (error) {
+            console.error('Error fetching Untappd data');
             console.log(error);
         }
     }
