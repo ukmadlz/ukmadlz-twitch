@@ -132,7 +132,7 @@ const main = async () => {
     const clipId = `${clip.id} by ${clip.creator_name}`;
     const clipTitle = `${clip.title} by ${clip.creator_name}`;
     const clipUrl = String(clip.thumbnail_url).split('-preview')[0] + '.mp4'
-    const uploadToCloudinary = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       Cloudinary.uploader.upload(clipUrl, {
         public_id: clip.id,
         folder: 'twitch-overlay/clips',
@@ -153,4 +153,5 @@ const main = async () => {
     }
   })
 }
-main();
+
+setInterval(main, 60000);
