@@ -85,23 +85,23 @@ const PossibleCommands: IPossibleCommands = {
       console.log('Do the thing');
     }
   },
-  beer: {
-    permissions: {
-      broadcaster: true,
-      mod: true,
-      founder: true,
-      subscriber: true,
-      vip: true,
-      highlighted: false,
-      customReward: false,
-      follower: true,
-      anyone: true,
-    },
-    action: async () => {
-      const beerStatement = await new Untappd().beerStatement();
-      ComfyJS.Say(beerStatement, String(process.env.TWITCH_CHANNEL));
-    }
-  }
+  // beer: {
+  //   permissions: {
+  //     broadcaster: true,
+  //     mod: true,
+  //     founder: true,
+  //     subscriber: true,
+  //     vip: true,
+  //     highlighted: false,
+  //     customReward: false,
+  //     follower: true,
+  //     anyone: true,
+  //   },
+  //   action: async () => {
+  //     const beerStatement = await new Untappd().beerStatement();
+  //     ComfyJS.Say(beerStatement, String(process.env.TWITCH_CHANNEL));
+  //   }
+  // }
 };
 
 // Receive the command from Twitch and do something
@@ -125,33 +125,37 @@ Cloudinary.config({
   api_secret: String(process.env.CLOUDINARY_API_SECRET), 
   secure: true
 });
+let paginationCursor = "";
 const main = async () => {
-  const clips = await tau.listClips();
+  const clips = await tau.listClips(paginationCursor);
   const redemptions = await tau.ListChannelPointRedemptions();
-  clips.data.forEach(async (clip: any) => {
-    const clipId = `${clip.id} by ${clip.creator_name}`;
-    const clipTitle = `${clip.title} by ${clip.creator_name}`;
-    const clipUrl = String(clip.thumbnail_url).split('-preview')[0] + '.mp4'
-    await new Promise((resolve, reject) => {
-      Cloudinary.uploader.upload(clipUrl, {
-        public_id: clip.id,
-        folder: 'twitch-overlay/clips',
-        resource_type: 'video',
-      }, (error: any, result: any) => {
-        if(error) reject(error);
-        else resolve(result);
+  if(clips.data) {
+    paginationCursor = clips.pagination.cursor;
+    (clips.data.length ? clips.data : []).forEach(async (clip: any) => {
+      const clipId = `${clip.id} by ${clip.creator_name}`;
+      const clipTitle = `${clip.title} by ${clip.creator_name}`;
+      const clipUrl = String(clip.thumbnail_url).split('-preview')[0] + '.mp4'
+      await new Promise((resolve, reject) => {
+        Cloudinary.uploader.upload(clipUrl, {
+          public_id: clip.id,
+          folder: 'twitch-overlay/clips',
+          resource_type: 'video',
+        }, (error: any, result: any) => {
+          if(error) reject(error);
+          else resolve(result);
+        })
+      });
+      const matchedRedemption = redemptions.data.filter((redemption: any) => {
+        return redemption.prompt === clipId;
       })
-    });
-    const matchedRedemption = redemptions.data.filter((redemption: any) => {
-      return redemption.prompt === clipId;
+      if(matchedRedemption.length < 1) {
+        console.log(`${clipTitle} has no redemption`);
+        tau.CreateChannelPointRedemption(clipTitle, clipId, 2000);
+      } else {
+        console.log(`${clipTitle} already exists`);
+      }
     })
-    if(matchedRedemption.length < 1) {
-      console.log(`${clipTitle} has no redemption`);
-      tau.CreateChannelPointRedemption(clipTitle, clipId, 2000);
-    } else {
-      console.log(`${clipTitle} already exists`);
-    }
-  })
+  }
 }
 
 setInterval(main, 60000);

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -- -p 1337",
     "build": "next build",
     "start": "next start"
   },
@@ -23,11 +23,13 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-responsive-carousel": "^3.2.20",
+    "uuid": "^8.3.2",
     "websocket": "^1.0.34"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.10",
     "@types/react": "17.0.8",
+    "@types/uuid": "^8.3.4",
     "@types/websocket": "^1.0.2",
     "css-loader": "^5.2.6",
     "mini-css-extract-plugin": "^1.6.0",

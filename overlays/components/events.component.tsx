@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import ComfyJS from 'comfy.js'
+import { v4 as uuid } from 'uuid';
 import ChannelPointRedemption from '../components/channelPointRedemption.component'
 import Alerts from '../components/alerts.component'
 
@@ -22,6 +24,7 @@ export default function EventsComponent() {
     const client = new W3CWebSocket(TAU_WS);
     
     useEffect(() => {
+      // TAU stuff
       client.onopen = () => {
           console.log('TAU WebSocket Client Connected');
           const TAU_TOKEN = process.env.NEXT_PUBLIC_TAU_WS_TOKEN || process.env.TAU_WS_TOKEN;
@@ -41,20 +44,47 @@ export default function EventsComponent() {
         }
       };
 
-      const queueEmptier = () => {
-        console.log(`Checking queue for events ${new Date()}`)
-        setTimeout(async () => {
-          if (tauEvents.length > 0) {
-            console.log('Setting event to state')
-            await setTauEvent(tauEvents.shift());
-          } else {
-            console.log(`Emptying state ${new Date()}`)
-            await setTauEvent(null)
-          }
-          queueEmptier();
-        }, 10000)
+      // Chat Commands
+      ComfyJS.Init(process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '');
+      ComfyJS.onCommand = ( user, command, message, flags, extra ) => {
+        const { id, userId, timestamp, messageEmotes } = extra;
+        if (tauEvents.findIndex(event => event.event_type === `command-${command}`) < 0) {
+          tauEvents.push({
+            id: uuid(),
+            event_id: id,
+            event_type: `command-${command}`,
+            event_source: 'comfyjs',
+            event_data: {
+              broadcaster_user_login: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
+              broadcaster_user_name: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
+              id: id,
+              user_id: userId,
+              user_login: user,
+              user_name: user,
+              user_input: message,
+              redeemed_at: new Date(timestamp),
+            },
+            created: new Date(timestamp),
+            origin: 'chat'
+          });
+        } else {
+          console.log(`${command} already queued`);
+        }
       }
-      queueEmptier();
+
+      // Queue Processing
+      const queueEmptier = async () => {
+        console.log(`Checking queue for events ${new Date()}`)
+        if (tauEvents.length > 0) {
+          console.log('Setting event to state')
+          await setTauEvent(tauEvents.shift());
+        } else {
+          console.log(`Emptying state ${new Date()}`)
+          await setTauEvent(null)
+        }
+      }
+      setInterval(queueEmptier, 10000)
+      
   
       return () => {
       }

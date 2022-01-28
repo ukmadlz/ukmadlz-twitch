@@ -39,8 +39,8 @@ export default class Tau {
         return Boolean(followerUserData.total)
     }
 
-    public async listClips() {
-        return await this.tauFetch('GET', `clips?broadcaster_id=${this.broadcasterId}`);
+    public async listClips(paginationCursor: string) {
+        return await this.tauFetch('GET', `clips?broadcaster_id=${this.broadcasterId}&after=${paginationCursor}`);
     }
 
     public async getClip(clipId: string) {

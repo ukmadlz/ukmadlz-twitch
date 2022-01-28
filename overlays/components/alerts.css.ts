@@ -7,5 +7,8 @@ export const alertContainer = style({
     position: 'absolute',
     top: (1080 / 3) + 'px',
     left: (1920 / 3) + 'px',
-    background: vars.color.white,
 })
+
+export const alertGifs = style({
+    width: (1920 / 3) + 'px',
+});

@@ -5,7 +5,8 @@ const allowedEvents = [
   'channel-follow',
   'channel-cheer',
   'channel-subscribe',
-  // 'raid'
+  'raid',
+  'command-drop'
 ];
 
 function getAlertDetails (tauEvent: any) {
@@ -17,6 +18,14 @@ function getAlertDetails (tauEvent: any) {
       return <h1>Thank you for following the madness {event_data.user_name}</h1>;
     case 'channel-subscribe':
       return <h1>Thank you for subbing {event_data.user_name}</h1>;
+    case 'raid':
+      return <h1>Incoming RAID from {event_data.user_name}!!!!!</h1>;
+    case 'command-drop':
+      return <img
+        className={styles.alertGifs}
+        src="/images/karen-drop.gif"
+        alt="Falling Karen"
+      />;
   }
 }
 
@@ -25,6 +34,6 @@ export default function Alerts(tauEvent: any): JSX.Element {
     return (<></>);
   }
   return ( 
-    <div className={styles.alertContainer}>{getAlertDetails(tauEvent)}</div>
+    <div className={styles.alertContainer} key={tauEvent.id}>{getAlertDetails(tauEvent)}</div>
   )
 }
