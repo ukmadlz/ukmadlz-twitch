@@ -1,4 +1,5 @@
 import React from 'react';
+import { getRandomEntry } from "@whitep4nth3r/get-random-entry";
 import * as styles from './alerts.css'
 
 const allowedEvents = [
@@ -21,9 +22,13 @@ function getAlertDetails (tauEvent: any) {
     case 'raid':
       return <h1>Incoming RAID from {event_data.user_name}!!!!!</h1>;
     case 'command-drop':
+      const dropGifs = [
+        "/images/karen-drop.gif",
+        "/images/hans-gruber.gif",
+      ]
       return <img
         className={styles.alertGifs}
-        src="/images/karen-drop.gif"
+        src={getRandomEntry(dropGifs)}
         alt="Falling Karen"
       />;
   }

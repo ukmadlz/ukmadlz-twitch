@@ -435,6 +435,11 @@
     "lodash" "^4.17.21"
     "virtual-resource-loader" "^1.0.0"
 
+"@whitep4nth3r/get-random-entry@^0.0.2":
+  "integrity" "sha512-UkeQj7NTUiiilAbBZrJ8B2b0i95ujlLPZtC0cPNeTCutsGA0+K91aWzY7StoU/hL+L+l8UgrjhxS/csXpHA2KQ=="
+  "resolved" "https://registry.npmjs.org/@whitep4nth3r/get-random-entry/-/get-random-entry-0.0.2.tgz"
+  "version" "0.0.2"
+
 "ajv-keywords@^3.5.2":
   "integrity" "sha512-5p6WTN0DdTGVQk6VjcEju19IgaHudalcfabD7yhDGeA6bcQnmL+CpveLJq/3hvfwd1aof6L386Ougkx6RfyMIQ=="
   "resolved" "https://registry.npmjs.org/ajv-keywords/-/ajv-keywords-3.5.2.tgz"
