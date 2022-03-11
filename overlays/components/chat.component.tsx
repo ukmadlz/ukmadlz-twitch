@@ -91,7 +91,7 @@ export default function Chat(): JSX.Element {
               messageEmotes,
             };
             setChat((previousChat: any) => {
-              if(previousChat.findIndex((chatMessage) => {
+              if(previousChat.findIndex((chatMessage: IChatMessage) => {
                 return chatMessage.messageId === id
               }) > -1){
                 return [
