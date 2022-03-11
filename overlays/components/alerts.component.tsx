@@ -22,15 +22,19 @@ function getAlertDetails (tauEvent: any) {
     case 'raid':
       return <h1>Incoming RAID from {event_data.user_name}!!!!!</h1>;
     case 'command-drop':
-      const dropGifs = [
-        "/images/karen-drop.gif",
-        "/images/hans-gruber.gif",
-      ]
-      return <img
-        className={styles.alertGifs}
-        src={getRandomEntry(dropGifs)}
-        alt="Falling Karen"
-      />;
+      if(Math.floor(Math.random() * 10)>5){
+        return <></>
+      } else {
+        const dropGifs = [
+          "/images/karen-drop.gif",
+          "/images/hans-gruber.gif",
+        ]
+        return <img
+          className={styles.alertGifs}
+          src={getRandomEntry(dropGifs)}
+          alt="Falling Karen"
+        />;
+      }
   }
 }
 
