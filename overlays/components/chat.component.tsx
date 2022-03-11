@@ -91,10 +91,18 @@ export default function Chat(): JSX.Element {
               messageEmotes,
             };
             setChat((previousChat: any) => {
-              return [
-                ...previousChat,
-                chatObject
-              ]
+              if(previousChat.findIndex((chatMessage) => {
+                return chatMessage.messageId === id
+              }) > -1){
+                return [
+                  ...previousChat
+                ]
+              } else {
+                return [
+                  ...previousChat,
+                  chatObject
+                ]
+              }
             })
           })()
         }
