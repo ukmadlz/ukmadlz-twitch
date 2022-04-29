@@ -32,8 +32,8 @@ export default function SocialFooterComponent () {
                 </div>
                 <div>
                     <img
-                        src="/assets/CloudQuerySmol.png"
-                        alt="CloudQuery"
+                        src="/assets/InfoSum.svg"
+                        alt="InfoSum"
                     />
                 </div>
             </Carousel>
