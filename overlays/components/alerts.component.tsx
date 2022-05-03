@@ -31,6 +31,7 @@ function getAlertDetails (tauEvent: any) {
           "/images/bunny-drop.gif",
           "/images/cow-dive.gif",
           "/images/max-collapse.gif",
+          "/images/jkarenrowdy.gif",
         ]
         return <img
           className={styles.alertGifs}
