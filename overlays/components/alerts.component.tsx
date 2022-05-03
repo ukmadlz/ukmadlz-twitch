@@ -28,6 +28,9 @@ function getAlertDetails (tauEvent: any) {
         const dropGifs = [
           "/images/karen-drop.gif",
           "/images/hans-gruber.gif",
+          "/images/bunny-drop.gif",
+          "/images/cow-dive.gif",
+          "/images/max-collapse.gif",
         ]
         return <img
           className={styles.alertGifs}
