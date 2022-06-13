@@ -7,11 +7,13 @@ import Alerts from '../components/alerts.component'
 
 const tauEvents: any[] = [];
 
+const KRAKEN_REWARD_ID = "7645e879-1c21-4931-bc75-574720a4ef7d"
+
 function getReturnComponent(eventType: string, tauEvent: any): JSX.Element | null {
   console.log(`Event Type: ${eventType}`)
   switch (eventType) {
     case 'channel-channel_points_custom_reward_redemption-add':
-      return <ChannelPointRedemption tauEvent={tauEvent}/>;
+      return <ChannelPointRedemption KRAKEN_REWARD_ID={KRAKEN_REWARD_ID} tauEvent={tauEvent}/>;
     default:
       return <Alerts tauEvent={tauEvent}/>;
   }
@@ -24,6 +26,9 @@ export default function EventsComponent() {
     const client = new W3CWebSocket(TAU_WS);
     
     useEffect(() => {
+      // Kraken stuff 
+      let krakenCounter = 0;
+
       // TAU stuff
       client.onopen = () => {
           console.log('TAU WebSocket Client Connected');
@@ -39,6 +44,11 @@ export default function EventsComponent() {
           console.log(`New event with data: ${eventObject.id}`)
           if (tauEvents.filter(event => event.id === eventObject.id).length < 1) {
             console.log(`Added ${eventObject.id} to queue`)
+            if(eventObject.event_data.reward && 
+              eventObject.event_data.reward.id === KRAKEN_REWARD_ID) {
+              eventObject.event_data.krakenCounter = (krakenCounter+1);
+              krakenCounter = (krakenCounter+1);
+            }
             tauEvents.push(eventObject);
           }
         }
