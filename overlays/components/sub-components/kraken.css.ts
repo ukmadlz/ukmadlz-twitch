@@ -4,6 +4,7 @@ import { vars } from '../../styles/var.css'
 const containerSize = 200;
 
 export const krakenCounterContainer = style({
+    "color": vars.color.white,
     "width": containerSize + "px",
     "height": containerSize + "px",
     "position": "absolute",
