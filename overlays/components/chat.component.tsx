@@ -19,6 +19,7 @@ interface IChatMessages extends Array<IChatMessage>{}
 const DND = [
   "135204446", // PretzelRocks
   "19264788", // NightBot
+  "402337290", // Sery_Bot
 ]
 
 const kindaBigDeal = [
