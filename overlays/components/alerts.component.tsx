@@ -23,7 +23,7 @@ function getAlertDetails (tauEvent: any) {
       return <h1>Incoming RAID from {event_data.user_name}!!!!!</h1>;
     case 'command-drop':
       if(Math.floor(Math.random() * 10)>5){
-        return <></>
+        return false
       } else {
         const dropGifs = [
           "/images/karen-drop.gif",
@@ -39,14 +39,17 @@ function getAlertDetails (tauEvent: any) {
           alt="Falling Karen"
         />;
       }
+    default:
+      return false;
   }
 }
 
-export default function Alerts(tauEvent: any): JSX.Element {
+export default function Alerts(tauEvent: any): JSX.Element | undefined {
   if (!allowedEvents.includes(tauEvent.tauEvent.event_type)) {
     return (<></>);
   }
+  const alertBlock = getAlertDetails(tauEvent);
   return ( 
-    <div className={styles.alertContainer} key={tauEvent.id}>{getAlertDetails(tauEvent)}</div>
+    <div className={((!alertBlock) ? styles.invisble : styles.alertContainer)} key={tauEvent.id}>{alertBlock}</div>
   )
 }

@@ -14,3 +14,7 @@ export const alertContainer = style({
 export const alertGifs = style({
     width: (1920 / 3) + 'px',
 });
+
+export const invisble = style({
+    display: 'none',
+})
