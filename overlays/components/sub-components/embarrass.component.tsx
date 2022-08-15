@@ -3,10 +3,9 @@ import { Video } from 'cloudinary-react';
 import * as styles from './embarrass.css'
 
 export default function EmbarrassComponent({ prompt }: any): JSX.Element {
-    const clipID = prompt.split(' by ')[0];
-    const parent = process.env.NEXT_PUBLIC_SITE_DOMAIN || process.env.NEXT_PUBLIC_VERCEL_URL || 'localhost';
-    const iframeUrl = `https://clips.twitch.tv/embed?muted=false&autoplay=true&clip=${clipID}&parent=${parent}`;
-    console.log(iframeUrl)
+    const clipDataArray = prompt.split(' by ');
+    if(clipDataArray.length < 2) return <></>;
+    const clipID = clipDataArray[0];
     return ( 
         <div className={styles.embarrassedContainer}>
             <Video

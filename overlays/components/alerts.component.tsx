@@ -44,7 +44,7 @@ function getAlertDetails (tauEvent: any) {
   }
 }
 
-export default function Alerts(tauEvent: any): JSX.Element | undefined {
+export default function Alerts(tauEvent: any): JSX.Element {
   if (!allowedEvents.includes(tauEvent.tauEvent.event_type)) {
     return (<></>);
   }
