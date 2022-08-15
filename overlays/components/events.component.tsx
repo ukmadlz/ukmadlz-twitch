@@ -33,7 +33,7 @@ export default function EventsComponent() {
     
     useEffect(() => {
       // Kraken stuff 
-      let krakenCounter = 0;
+      let krakenCounter = parseInt(localStorage.getItem('TotalKrakenRewards')) || 0;
 
       // TAU stuff
       client.onopen = () => {
@@ -55,6 +55,7 @@ export default function EventsComponent() {
               eventObject.event_data.reward.id === KRAKEN_REWARD_ID) {
               eventObject.event_data.krakenCounter = (krakenCounter+1);
               krakenCounter = (krakenCounter+1);
+              localStorage.setItem('TotalKrakenRewards', krakenCounter);
             }
             tauEvents.push(eventObject);
           }
