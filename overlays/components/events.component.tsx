@@ -9,6 +9,12 @@ const tauEvents: any[] = [];
 
 const KRAKEN_REWARD_ID = "7645e879-1c21-4931-bc75-574720a4ef7d"
 
+const SKIPPED_EVENT_TYPES = [
+  'channel-channel_points_custom_reward-remove',
+  'channel-channel_points_custom_reward-add',
+  'channel-channel_points_custom_reward_redemption-update',
+];
+
 function getReturnComponent(eventType: string, tauEvent: any): JSX.Element | null {
   console.log(`Event Type: ${eventType}`)
   switch (eventType) {
@@ -42,7 +48,8 @@ export default function EventsComponent() {
         if (message.data) {
           const eventObject = JSON.parse(message.data.toString());
           console.log(`New event with data: ${eventObject.id}`)
-          if (tauEvents.filter(event => event.id === eventObject.id).length < 1) {
+          if (tauEvents.filter(event => event.id === eventObject.id).length < 1 &&
+            !SKIPPED_EVENT_TYPES.includes(eventObject.event_type)) {
             console.log(`Added ${eventObject.id} to queue`)
             if(eventObject.event_data.reward && 
               eventObject.event_data.reward.id === KRAKEN_REWARD_ID) {
