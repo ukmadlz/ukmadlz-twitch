@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import ComfyJS from 'comfy.js'
 import { v4 as uuid } from 'uuid';
+import axios from 'axios';
 import ChannelPointRedemption from '../components/channelPointRedemption.component'
 import Alerts from '../components/alerts.component'
 
 const tauEvents: any[] = [];
+
 
 const KRAKEN_REWARD_ID = "7645e879-1c21-4931-bc75-574720a4ef7d"
 
@@ -14,6 +16,10 @@ const SKIPPED_EVENT_TYPES = [
   'channel-channel_points_custom_reward-add',
   'channel-channel_points_custom_reward_redemption-update',
 ];
+
+const COMMAND_DURATION_MAP: any = {
+  'command-drop': 5000,
+}
 
 function getReturnComponent(eventType: string, tauEvent: any): JSX.Element | null {
   console.log(`Event Type: ${eventType}`)
@@ -36,26 +42,45 @@ export default function EventsComponent() {
     let krakenCounter = parseInt(localStorage.getItem('TotalKrakenRewards') || "0") || 0;
 
     // TAU stuff
+    const TAU_TOKEN = process.env.NEXT_PUBLIC_TAU_WS_TOKEN || process.env.TAU_WS_TOKEN;
     client.onopen = () => {
       console.log('TAU WebSocket Client Connected');
-      const TAU_TOKEN = process.env.NEXT_PUBLIC_TAU_WS_TOKEN || process.env.TAU_WS_TOKEN;
       client.send(JSON.stringify({
         token: TAU_TOKEN
       }))
     };
 
-    client.onmessage = (message) => {
+    client.onmessage = async (message) => {
       if (message.data) {
         const eventObject = JSON.parse(message.data.toString());
         console.log(`New event with data: ${eventObject.id}`)
         if (tauEvents.filter(event => event.id === eventObject.id).length < 1 &&
           !SKIPPED_EVENT_TYPES.includes(eventObject.event_type)) {
           console.log(`Added ${eventObject.id} to queue`)
+          // Kraken
           if (eventObject.event_data.reward &&
             eventObject.event_data.reward.id === KRAKEN_REWARD_ID) {
+            eventObject.duration = 10000;
             eventObject.event_data.krakenCounter = (krakenCounter + 1);
             krakenCounter = (krakenCounter + 1);
             localStorage.setItem('TotalKrakenRewards', `${krakenCounter}`);
+          }
+          // Troll Selecta
+          if (eventObject.event_data.reward &&
+            eventObject.event_data.reward.prompt) {
+              const clipDataArray = eventObject.event_data.reward.prompt.split(' by ');
+              if(clipDataArray.length >= 2) {
+                const clipID = clipDataArray[0];
+                const clipData = await axios.get(`https://ukmadlz-tau.onrender.com/api/twitch/helix/clips?id=${clipID}`, {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${TAU_TOKEN}`
+                  }
+                })
+                if(clipData) {
+                  eventObject.duration = clipData.data.data[0].duration * 1000;
+                }
+              }
           }
           tauEvents.push(eventObject);
         }
@@ -83,7 +108,8 @@ export default function EventsComponent() {
             redeemed_at: new Date(timestamp),
           },
           created: new Date(timestamp),
-          origin: 'chat'
+          origin: 'chat',
+          duration: COMMAND_DURATION_MAP[`command-${command}`] || 10000,
         });
       } else {
         console.log(`${command} already queued`);
@@ -95,14 +121,16 @@ export default function EventsComponent() {
       console.log(`Checking queue for events ${new Date()}`)
       if (tauEvents.length > 0) {
         console.log('Setting event to state')
-        await setTauEvent(tauEvents.shift());
+        const newTauEvent = tauEvents.shift();
+        await setTauEvent(newTauEvent);
+        setTimeout(queueEmptier, newTauEvent.duration || 10000);
       } else {
         console.log(`Emptying state ${new Date()}`)
         await setTauEvent(null)
+        setTimeout(queueEmptier, 1000);
       }
     }
-    setInterval(queueEmptier, 1000)
-
+    queueEmptier();
 
     return () => {
     }
