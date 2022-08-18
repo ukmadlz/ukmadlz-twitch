@@ -19,94 +19,94 @@ function getReturnComponent(eventType: string, tauEvent: any): JSX.Element | nul
   console.log(`Event Type: ${eventType}`)
   switch (eventType) {
     case 'channel-channel_points_custom_reward_redemption-add':
-      return <ChannelPointRedemption KRAKEN_REWARD_ID={KRAKEN_REWARD_ID} tauEvent={tauEvent}/>;
+      return <ChannelPointRedemption KRAKEN_REWARD_ID={KRAKEN_REWARD_ID} tauEvent={tauEvent} />;
     default:
-      return <Alerts tauEvent={tauEvent}/>;
+      return <Alerts tauEvent={tauEvent} />;
   }
 }
 
 export default function EventsComponent() {
-    const [tauEvent, setTauEvent] = useState<any | null>(null);
-  
-    const TAU_WS = process.env.NEXT_PUBLIC_TAU_WS_URL || process.env.TAU_WS_URL || 'ws://localhost:8000/ws/twitch-events/';
-    const client = new W3CWebSocket(TAU_WS);
-    
-    useEffect(() => {
-      // Kraken stuff 
-      let krakenCounter = parseInt(localStorage.getItem('TotalKrakenRewards') || "0") || 0;
+  const [tauEvent, setTauEvent] = useState<any | null>(null);
 
-      // TAU stuff
-      client.onopen = () => {
-          console.log('TAU WebSocket Client Connected');
-          const TAU_TOKEN = process.env.NEXT_PUBLIC_TAU_WS_TOKEN || process.env.TAU_WS_TOKEN;
-          client.send(JSON.stringify({
-              token: TAU_TOKEN
-          }))
-      };
-  
-      client.onmessage = (message) => {
-        if (message.data) {
-          const eventObject = JSON.parse(message.data.toString());
-          console.log(`New event with data: ${eventObject.id}`)
-          if (tauEvents.filter(event => event.id === eventObject.id).length < 1 &&
-            !SKIPPED_EVENT_TYPES.includes(eventObject.event_type)) {
-            console.log(`Added ${eventObject.id} to queue`)
-            if(eventObject.event_data.reward && 
-              eventObject.event_data.reward.id === KRAKEN_REWARD_ID) {
-              eventObject.event_data.krakenCounter = (krakenCounter+1);
-              krakenCounter = (krakenCounter+1);
-              localStorage.setItem('TotalKrakenRewards', `${krakenCounter}`);
-            }
-            tauEvents.push(eventObject);
+  const TAU_WS = process.env.NEXT_PUBLIC_TAU_WS_URL || process.env.TAU_WS_URL || 'ws://localhost:8000/ws/twitch-events/';
+  const client = new W3CWebSocket(TAU_WS);
+
+  useEffect(() => {
+    // Kraken stuff 
+    let krakenCounter = parseInt(localStorage.getItem('TotalKrakenRewards') || "0") || 0;
+
+    // TAU stuff
+    client.onopen = () => {
+      console.log('TAU WebSocket Client Connected');
+      const TAU_TOKEN = process.env.NEXT_PUBLIC_TAU_WS_TOKEN || process.env.TAU_WS_TOKEN;
+      client.send(JSON.stringify({
+        token: TAU_TOKEN
+      }))
+    };
+
+    client.onmessage = (message) => {
+      if (message.data) {
+        const eventObject = JSON.parse(message.data.toString());
+        console.log(`New event with data: ${eventObject.id}`)
+        if (tauEvents.filter(event => event.id === eventObject.id).length < 1 &&
+          !SKIPPED_EVENT_TYPES.includes(eventObject.event_type)) {
+          console.log(`Added ${eventObject.id} to queue`)
+          if (eventObject.event_data.reward &&
+            eventObject.event_data.reward.id === KRAKEN_REWARD_ID) {
+            eventObject.event_data.krakenCounter = (krakenCounter + 1);
+            krakenCounter = (krakenCounter + 1);
+            localStorage.setItem('TotalKrakenRewards', `${krakenCounter}`);
           }
-        }
-      };
-
-      // Chat Commands
-      ComfyJS.Init(process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '');
-      ComfyJS.onCommand = ( user, command, message, flags, extra ) => {
-        const { id, userId, timestamp, messageEmotes } = extra;
-        if (tauEvents.findIndex(event => event.event_type === `command-${command}`) < 0) {
-          tauEvents.push({
-            id: uuid(),
-            event_id: id,
-            event_type: `command-${command}`,
-            event_source: 'comfyjs',
-            event_data: {
-              broadcaster_user_login: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
-              broadcaster_user_name: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
-              id: id,
-              user_id: userId,
-              user_login: user,
-              user_name: user,
-              user_input: message,
-              redeemed_at: new Date(timestamp),
-            },
-            created: new Date(timestamp),
-            origin: 'chat'
-          });
-        } else {
-          console.log(`${command} already queued`);
+          tauEvents.push(eventObject);
         }
       }
+    };
 
-      // Queue Processing
-      const queueEmptier = async () => {
-        console.log(`Checking queue for events ${new Date()}`)
-        if (tauEvents.length > 0) {
-          console.log('Setting event to state')
-          await setTauEvent(tauEvents.shift());
-        } else {
-          console.log(`Emptying state ${new Date()}`)
-          await setTauEvent(null)
-        }
+    // Chat Commands
+    ComfyJS.Init(process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '');
+    ComfyJS.onCommand = (user, command, message, flags, extra) => {
+      const { id, userId, timestamp, messageEmotes } = extra;
+      if (tauEvents.findIndex(event => event.event_type === `command-${command}`) < 0) {
+        tauEvents.push({
+          id: uuid(),
+          event_id: id,
+          event_type: `command-${command}`,
+          event_source: 'comfyjs',
+          event_data: {
+            broadcaster_user_login: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
+            broadcaster_user_name: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
+            id: id,
+            user_id: userId,
+            user_login: user,
+            user_name: user,
+            user_input: message,
+            redeemed_at: new Date(timestamp),
+          },
+          created: new Date(timestamp),
+          origin: 'chat'
+        });
+      } else {
+        console.log(`${command} already queued`);
       }
-      setInterval(queueEmptier, 10000)
-      
-  
-      return () => {
-      }
-    }, [])
+    }
 
-    return (<>{tauEvent && getReturnComponent(tauEvent.event_type, tauEvent)}</>)
+    // Queue Processing
+    const queueEmptier = async () => {
+      console.log(`Checking queue for events ${new Date()}`)
+      if (tauEvents.length > 0) {
+        console.log('Setting event to state')
+        await setTauEvent(tauEvents.shift());
+      } else {
+        console.log(`Emptying state ${new Date()}`)
+        await setTauEvent(null)
+      }
+    }
+    setInterval(queueEmptier, 1000)
+
+
+    return () => {
+    }
+  }, [])
+
+  return (<>{tauEvent && getReturnComponent(tauEvent.event_type, tauEvent)}</>)
 }
