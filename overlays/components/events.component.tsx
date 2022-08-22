@@ -90,9 +90,44 @@ export default function EventsComponent() {
 
     // Chat Commands
     ComfyJS.Init(process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '');
-    ComfyJS.onCommand = (user, command, message, flags, extra) => {
+    ComfyJS.onCommand = async (user, command, message, flags, extra) => {
       const { id, userId, timestamp, messageEmotes } = extra;
-      if (tauEvents.findIndex(event => event.event_type === `command-${command}`) < 0) {
+      if ((flags.broadcaster || flags.broadcaster || flags.subscriber) && command == 'watch') {
+        console.log({ command, message })
+        const clipID = new URL(message).pathname.substring(1);
+        console.log(clipID)
+        const clipData = await axios.get(`https://ukmadlz-tau.onrender.com/api/twitch/helix/clips?id=${clipID}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${TAU_TOKEN}`
+          }
+        })
+        if(clipData) {
+          tauEvents.push({
+            id: uuid(),
+            event_id: id,
+            event_type: `channel-channel_points_custom_reward_redemption-add`,
+            event_source: 'comfyjs',
+            event_data: {
+              broadcaster_user_login: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
+              broadcaster_user_name: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
+              id: id,
+              user_id: userId,
+              user_login: user,
+              user_name: user,
+              user_input: message,
+              redeemed_at: new Date(timestamp),
+              reward: {
+                prompt: `${clipID} by ${user}`
+              }
+            },
+            created: new Date(timestamp),
+            origin: 'chat',
+            duration: clipData.data.data[0].duration * 1000,
+          });
+        }
+      }
+      else if (tauEvents.findIndex(event => event.event_type === `command-${command}`) < 0) {
         tauEvents.push({
           id: uuid(),
           event_id: id,
