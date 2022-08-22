@@ -19,6 +19,7 @@ const SKIPPED_EVENT_TYPES = [
 
 const COMMAND_DURATION_MAP: any = {
   'command-drop': 5000,
+  'command-littlethings': 3200,
 }
 
 function getReturnComponent(eventType: string, tauEvent: any): JSX.Element | null {

@@ -7,7 +7,8 @@ const allowedEvents = [
   'channel-cheer',
   'channel-subscribe',
   'raid',
-  'command-drop'
+  'command-drop',
+  'command-littlethings',
 ];
 
 function getAlertDetails (tauEvent: any) {
@@ -21,6 +22,12 @@ function getAlertDetails (tauEvent: any) {
       return <h1>Thank you for subbing {event_data.user_name}</h1>;
     case 'raid':
       return <h1>Incoming RAID from {event_data.user_name}!!!!!</h1>;
+    case 'command-littlethings':
+      return <img
+          className={styles.alertGifs}
+          src={"/images/rule32.gif"}
+          alt="Enjoy the little things"
+        />;
     case 'command-drop':
       if(Math.floor(Math.random() * 10)>5){
         return false
