@@ -22,6 +22,8 @@ const COMMAND_DURATION_MAP: any = {
   'command-littlethings': 3200,
 }
 
+const CLIP_BUFFER: any = {};
+
 function getReturnComponent(eventType: string, tauEvent: any): JSX.Element | null {
   console.log(`Event Type: ${eventType}`)
   switch (eventType) {
@@ -92,17 +94,23 @@ export default function EventsComponent() {
     ComfyJS.Init(process.env.NEXT_PUBLIC_TWITCH_CHANNEL || '');
     ComfyJS.onCommand = async (user, command, message, flags, extra) => {
       const { id, userId, timestamp, messageEmotes } = extra;
-      if ((flags.broadcaster || flags.broadcaster || flags.subscriber) && command == 'watch') {
-        console.log({ command, message })
-        const clipID = new URL(message).pathname.substring(1);
-        console.log(clipID)
+      if ((flags.broadcaster || flags.vip || flags.subscriber) && command == 'watch') {
+        let clipID:any = '';
+        if (message.startsWith('https://clips.twitch.tv/')) {
+          clipID = new URL(message).pathname.substring(1);
+        } else if (message.startsWith('https://www.twitch.tv/')) {
+          clipID = new URL(message).pathname.substring(1).split('/').pop();
+        }
+        if(!CLIP_BUFFER[clipID]) {
+          CLIP_BUFFER[clipID] = new Date();
+        }
         const clipData = await axios.get(`https://ukmadlz-tau.onrender.com/api/twitch/helix/clips?id=${clipID}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Token ${TAU_TOKEN}`
           }
         })
-        if(clipData) {
+        if(clipData && CLIP_BUFFER[clipID] < new Date()) {
           tauEvents.push({
             id: uuid(),
             event_id: id,
@@ -125,6 +133,7 @@ export default function EventsComponent() {
             origin: 'chat',
             duration: clipData.data.data[0].duration * 1000,
           });
+          CLIP_BUFFER[clipID] = new Date(new Date().getTime() + 5*60000);
         }
       }
       else if (tauEvents.findIndex(event => event.event_type === `command-${command}`) < 0) {
