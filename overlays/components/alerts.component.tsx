@@ -9,6 +9,8 @@ const allowedEvents = [
   'raid',
   'command-drop',
   'command-littlethings',
+  'command-smallthings',
+  'command-rule32',
 ];
 
 function getAlertDetails (tauEvent: any) {
@@ -24,7 +26,7 @@ function getAlertDetails (tauEvent: any) {
       return <h1>Incoming RAID from {event_data.user_name}!!!!!</h1>;
     case 'command-littlethings':
     case 'command-smallthings':
-    case 'rule32':
+    case 'command-rule32':
       return <img
           className={styles.alertGifs}
           src={"/images/rule32.gif"}
