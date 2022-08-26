@@ -23,6 +23,8 @@ function getAlertDetails (tauEvent: any) {
     case 'raid':
       return <h1>Incoming RAID from {event_data.user_name}!!!!!</h1>;
     case 'command-littlethings':
+    case 'command-smallthings':
+    case 'rule32':
       return <img
           className={styles.alertGifs}
           src={"/images/rule32.gif"}

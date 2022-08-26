@@ -127,9 +127,11 @@ Cloudinary.config({
 });
 let paginationCursor = "";
 const main = async () => {
+  console.log('Start Bot');
   const clips = await tau.listClips(paginationCursor);
   const redemptions = await tau.ListChannelPointRedemptions();
   if(clips.data) {
+    console.log('got data')
     paginationCursor = clips.pagination.cursor;
     (clips.data.length ? clips.data : []).forEach(async (clip: any) => {
       const clipId = `${clip.id} by ${clip.creator_name}`;
@@ -150,12 +152,16 @@ const main = async () => {
       })
       if(matchedRedemption.length < 1) {
         console.log(`${clipTitle} has no redemption`);
-        tau.CreateChannelPointRedemption(clipTitle, clipId, 2000);
+        const response = await tau.CreateChannelPointRedemption(clipTitle, clipId, 2000);
+        console.log({
+          clipTitle,
+          response,
+        })
       } else {
         console.log(`${clipTitle} already exists`);
       }
     })
   }
 }
-
+main();
 setInterval(main, 60000);
