@@ -17,31 +17,35 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     });
 
     const { clipId } = req.query;
-    const response = await Fetch(`https://ukmadlz-tau.onrender.com/api/twitch/helix/clips?format=json&id=${clipId}`,
-        {
-        method: 'get',
-        headers: {
-            'Authorization': `Token ${process.env.NEXT_PUBLIC_TAU_WS_TOKEN}`
-        },
-    });
-    const responseData = await response.json();
-    const clipData = responseData.data.pop();
-
-    const clipUrl = String(clipData.thumbnail_url).split('-preview')[0] + '.mp4'
+    console.log('Clip ID: ', clipId)
     try {
-        await new Promise((resolve, reject) => {
-            Cloudinary.uploader.upload(clipUrl, {
-                public_id: clipData.id,
-                folder: 'twitch-overlay/clips',
-                resource_type: 'video',
-            }, (error, result) => {
-                if(error) reject(error)
-                else resolve(result);
+        const response = await Fetch(`https://ukmadlz-tau.onrender.com/api/twitch/helix/clips?format=json&id=${clipId}`,
+            {
+            method: 'get',
+            headers: {
+                'Authorization': `Token ${process.env.NEXT_PUBLIC_TAU_WS_TOKEN}`
+            },
+        });
+        const responseData = await response.json();
+        const clipData = responseData.data.pop();
+        console.log('Thumbnail: ', clipData.thumbnail_url);
+        const clipUrl = String(clipData.thumbnail_url).split('-preview')[0] + '.mp4'
+        try {
+            await new Promise((resolve, reject) => {
+                Cloudinary.uploader.upload(clipUrl, {
+                    public_id: clipData.id,
+                    folder: 'twitch-overlay/clips',
+                    resource_type: 'video',
+                }, (error, result) => {
+                    if(error) reject(error)
+                    else resolve(result);
+                })
             })
-        })
-        res.status(200).json({ clipId: clipData.id })
+            res.status(200).json({ clipId: clipData.id })
+        } catch (error) {
+            res.status(500).json({ message: error.message })
+        }
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
-
 }
