@@ -4,7 +4,8 @@ import { v2 as Cloudinary } from 'cloudinary';
 import Fetch from 'node-fetch'
 
 type Data = {
-    clipId: string
+    clipId?: string;
+    message?: string;
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
@@ -38,7 +39,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
                 else resolve(result);
             })
         })
-        res.status(200).json({ clipId })
+        res.status(200).json({ clipId: clipData.id })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
