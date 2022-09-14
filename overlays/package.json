@@ -17,6 +17,7 @@
     "@vanilla-extract/webpack-plugin": "^0.3.1",
     "@whitep4nth3r/get-random-entry": "^0.0.2",
     "axios": "^0.27.2",
+    "cloudinary": "^1.31.0",
     "cloudinary-react": "^1.7.0",
     "comfy.js": "^1.1.12",
     "html-react-parser": "^1.4.0",

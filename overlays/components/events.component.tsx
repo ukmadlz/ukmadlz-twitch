@@ -111,6 +111,8 @@ export default function EventsComponent() {
           }
         })
         if(clipData && CLIP_BUFFER[clipID] < new Date()) {
+          await axios.get(`/api/load-twitch-clip?clipId=${clipID}`)
+          await axios.get(`https://res.cloudinary.com/elsmore-me/video/upload/v1/twitch-overlay/clips/${clipID}`)
           tauEvents.push({
             id: uuid(),
             event_id: id,
