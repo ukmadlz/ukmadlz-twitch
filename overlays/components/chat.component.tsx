@@ -43,10 +43,9 @@ function getMessageHTML(message: string, emotes: any) {
       parseInt(start, 10),
       parseInt(end, 10) + 1
     );
-
     stringReplacements.push({
       stringToReplace: stringToReplace,
-      replacement: `<img src="https://static-cdn.jtvnw.net/emoticons/v1/${id}/3.0" style="width: 3em">`,
+      replacement: `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/2.0" style="width: 3em">`,
     });
   });
 
@@ -107,8 +106,17 @@ export default function Chat(): JSX.Element {
             })
           })()
         }
-
     }
+    setInterval(() => {
+      setChat((previousChat: any) => {
+        console.log('Chat check ', new Date())
+        return[
+          ...(previousChat.filter((chat: any) => {
+            return (Number(chat.timestamp) + 60000) > new Date().getTime()
+          }))
+        ]
+      })
+    }, 5000)
     return () => {
     }
   }, [])
@@ -116,7 +124,8 @@ export default function Chat(): JSX.Element {
   return (
     <div className={styles.chatContainer} >
       <div className={styles.chatList}>
-        {chat?.slice(-8).map(chatMessage => {
+        {chat?.slice(-8)
+        .map(chatMessage => {
           const profileImage = (chatMessage?.userId && kindaBigDeal.includes(chatMessage.userId)) ? 
           `https://res.cloudinary.com/elsmore-me/image/upload/b_rgb:000000,bo_0px_solid_rgb:000,c_scale,g_center,l_twitch-overlay:users-${chatMessage.userId},w_98,x_60,y_60/v1628698037/twitch-overlay/verified.png` :
           chatMessage.profileImage;
