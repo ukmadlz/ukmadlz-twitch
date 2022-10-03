@@ -182,8 +182,10 @@ export default function EventsComponent() {
     }
     queueEmptier();
 
-    return () => {
-    }
+    return function cleanup() {
+      console.log('Buh bye now')
+      client.close();
+    };
   }, [])
 
   return (<>{tauEvent && getReturnComponent(tauEvent.event_type, tauEvent)}</>)

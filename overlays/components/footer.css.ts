@@ -7,7 +7,7 @@ export const footer = style({
 export const colourBar = style({
     "height": "1em",
     "width": "100%",
-    "backgroundColor": vars.color['orange-red']
+    "backgroundColor": vars.color['teal']
 })
 export const footerContainer = style({
     "padding": "1em",
