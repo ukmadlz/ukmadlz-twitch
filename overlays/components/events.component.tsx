@@ -113,28 +113,31 @@ export default function EventsComponent() {
         if(clipData && CLIP_BUFFER[clipID] < new Date()) {
           await axios.get(`/api/load-twitch-clip?clipId=${clipID}`)
           await axios.get(`https://res.cloudinary.com/elsmore-me/video/upload/v1/twitch-overlay/clips/${clipID}`)
-          tauEvents.push({
-            id: uuid(),
-            event_id: id,
-            event_type: `channel-channel_points_custom_reward_redemption-add`,
-            event_source: 'comfyjs',
-            event_data: {
-              broadcaster_user_login: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
-              broadcaster_user_name: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
-              id: id,
-              user_id: userId,
-              user_login: user,
-              user_name: user,
-              user_input: message,
-              redeemed_at: new Date(timestamp),
-              reward: {
-                prompt: `${clipID} by ${user}`
-              }
-            },
-            created: new Date(timestamp),
-            origin: 'chat',
-            duration: clipData.data.data[0].duration * 1000,
-          });
+          setTimeout(() => {
+            console.log(`Added ${clipID} by ${user}`)
+            tauEvents.push({
+              id: uuid(),
+              event_id: id,
+              event_type: `channel-channel_points_custom_reward_redemption-add`,
+              event_source: 'comfyjs',
+              event_data: {
+                broadcaster_user_login: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
+                broadcaster_user_name: process.env.NEXT_PUBLIC_TWITCH_CHANNEL,
+                id: id,
+                user_id: userId,
+                user_login: user,
+                user_name: user,
+                user_input: message,
+                redeemed_at: new Date(timestamp),
+                reward: {
+                  prompt: `${clipID} by ${user}`
+                }
+              },
+              created: new Date(timestamp),
+              origin: 'chat',
+              duration: clipData.data.data[0].duration * 1000,
+            });
+          }, 10000);
           CLIP_BUFFER[clipID] = new Date(new Date().getTime() + 5*60000);
         }
       }
