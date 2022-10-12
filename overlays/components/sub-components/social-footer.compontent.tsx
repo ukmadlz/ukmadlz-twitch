@@ -31,10 +31,7 @@ export default function SocialFooterComponent () {
                     <FontAwesomeIcon className={styles.socialIcon} icon={['fab', 'twitch']} />/ukmadlz
                 </div>
                 <div>
-                    <img
-                        src="/assets/InfoSum.svg"
-                        alt="InfoSum"
-                    />
+                    <span>elsmore.me</span>
                 </div>
             </Carousel>
         </div>
