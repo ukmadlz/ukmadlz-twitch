@@ -33,6 +33,15 @@ export default function SocialFooterComponent () {
                 <div>
                     <span>elsmore.me</span>
                 </div>
+                <div>
+                    <img
+                        src="https://res.cloudinary.com/elsmore-me/image/upload/c_lpad,h_70,w_300/twitch-overlay/infobip_logo_white_RGB_1000x400px.png"
+                        style={{
+                            "width": "300px",
+                            "height": "70px",
+                        }}
+                    />
+                </div>
             </Carousel>
         </div>
     );
