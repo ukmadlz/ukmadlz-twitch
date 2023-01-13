@@ -61,7 +61,7 @@ export default function EventsComponent() {
           !SKIPPED_EVENT_TYPES.includes(eventObject.event_type)) {
           console.log(`Added ${eventObject.id} to queue`)
           // Kraken
-          if (eventObject.event_data.reward &&
+          if (eventObject.event_data && eventObject.event_data.reward &&
             eventObject.event_data.reward.id === KRAKEN_REWARD_ID) {
             eventObject.duration = 10000;
             eventObject.event_data.krakenCounter = (krakenCounter + 1);
@@ -69,7 +69,7 @@ export default function EventsComponent() {
             localStorage.setItem('TotalKrakenRewards', `${krakenCounter}`);
           }
           // Troll Selecta
-          if (eventObject.event_data.reward &&
+          if (eventObject.event_data && eventObject.event_data.reward &&
             eventObject.event_data.reward.prompt) {
               const clipDataArray = eventObject.event_data.reward.prompt.split(' by ');
               if(clipDataArray.length >= 2) {
@@ -110,7 +110,7 @@ export default function EventsComponent() {
             'Authorization': `Token ${TAU_TOKEN}`
           }
         })
-        if(clipData && CLIP_BUFFER[clipID] < new Date()) {
+        if(clipData && (CLIP_BUFFER[clipID] < new Date() || flags.broadcaster)) {
           await axios.get(`/api/load-twitch-clip?clipId=${clipID}`)
           await axios.get(`https://res.cloudinary.com/elsmore-me/video/upload/v1/twitch-overlay/clips/${clipID}`)
           setTimeout(() => {
